@@ -1030,12 +1030,12 @@
     1. Go to analytics.google.com and create a free account
     2. Create a property for valuecode.com.au
     3. Copy your Measurement ID (starts with G-)
-    4. Replace G-4NHREC065T below with your actual ID (in two places)
+    4. Replace GA_MEASUREMENT_ID below with your actual ID (in two places)
   -->
 
   <script>
     // ===== COOKIE CONSENT MANAGEMENT =====
-    const GA_ID = 'G-4NHREC065T'; // Replace with your Google Analytics ID e.g. 'G-XXXXXXXXXX'
+    const GA_ID = 'G-4NHREC065T';
 
     function hasConsent() {
       return document.cookie.split('; ').some(c => c === 'cookie_consent=accepted');
@@ -1051,7 +1051,7 @@
     }
 
     function loadAnalytics() {
-      if (GA_ID === 'G-4NHREC065T') return; // Skip if not configured yet
+      if (GA_ID === 'GA_MEASUREMENT_ID') return; // Skip if not configured yet
       const script = document.createElement('script');
       script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
       script.async = true;
