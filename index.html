@@ -778,6 +778,83 @@
       .credential-value { font-size: 17px; }
 
       .service-card { padding: 32px 24px; }
+
+      .cookie-inner { flex-direction: column; gap: 16px; }
+      .cookie-text { text-align: center; }
+      .cookie-actions { width: 100%; justify-content: center; }
+    }
+
+    /* ===== COOKIE CONSENT BANNER ===== */
+    .cookie-banner {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 9999;
+      background: var(--charcoal);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 20px 32px;
+      transform: translateY(100%);
+      opacity: 0;
+      transition: transform 0.4s ease, opacity 0.4s ease;
+    }
+
+    .cookie-banner.visible {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .cookie-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .cookie-text {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.5;
+      flex: 1;
+    }
+
+    .cookie-actions {
+      display: flex;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .cookie-btn {
+      padding: 10px 24px;
+      border-radius: 6px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .cookie-accept {
+      background: var(--teal);
+      color: var(--white);
+    }
+
+    .cookie-accept:hover {
+      background: var(--teal-light);
+    }
+
+    .cookie-decline {
+      background: transparent;
+      color: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .cookie-decline:hover {
+      color: var(--white);
+      border-color: rgba(255, 255, 255, 0.4);
     }
   </style>
 </head>
@@ -936,6 +1013,86 @@
       </div>
     </div>
   </footer>
+
+  <!-- ===== COOKIE CONSENT BANNER ===== -->
+  <div class="cookie-banner" id="cookieBanner">
+    <div class="cookie-inner">
+      <p class="cookie-text">This website uses cookies to analyse site traffic and improve your experience. By clicking "Accept", you consent to the use of cookies.</p>
+      <div class="cookie-actions">
+        <button class="cookie-btn cookie-decline" id="cookieDecline">Decline</button>
+        <button class="cookie-btn cookie-accept" id="cookieAccept">Accept</button>
+      </div>
+    </div>
+  </div>
+
+  <!--
+    GOOGLE ANALYTICS SETUP:
+    1. Go to analytics.google.com and create a free account
+    2. Create a property for valuecode.com.au
+    3. Copy your Measurement ID (starts with G-)
+    4. Replace G-4NHREC065T below with your actual ID (in two places)
+  -->
+
+  <script>
+    // ===== COOKIE CONSENT MANAGEMENT =====
+    const GA_ID = 'G-4NHREC065T'; // Replace with your Google Analytics ID e.g. 'G-XXXXXXXXXX'
+
+    function hasConsent() {
+      return document.cookie.split('; ').some(c => c === 'cookie_consent=accepted');
+    }
+
+    function hasDeclined() {
+      return document.cookie.split('; ').some(c => c === 'cookie_consent=declined');
+    }
+
+    function setConsent(value) {
+      const expires = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toUTCString();
+      document.cookie = `cookie_consent=${value}; expires=${expires}; path=/; SameSite=Lax`;
+    }
+
+    function loadAnalytics() {
+      if (GA_ID === 'G-4NHREC065T') return; // Skip if not configured yet
+      const script = document.createElement('script');
+      script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+      script.async = true;
+      document.head.appendChild(script);
+      script.onload = function() {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){ dataLayer.push(arguments); }
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', GA_ID, { anonymize_ip: true });
+      };
+    }
+
+    function showBanner() {
+      document.getElementById('cookieBanner').classList.add('visible');
+    }
+
+    function hideBanner() {
+      document.getElementById('cookieBanner').classList.remove('visible');
+    }
+
+    // Accept button
+    document.getElementById('cookieAccept').addEventListener('click', function() {
+      setConsent('accepted');
+      hideBanner();
+      loadAnalytics();
+    });
+
+    // Decline button
+    document.getElementById('cookieDecline').addEventListener('click', function() {
+      setConsent('declined');
+      hideBanner();
+    });
+
+    // On page load: check consent status
+    if (hasConsent()) {
+      loadAnalytics();
+    } else if (!hasDeclined()) {
+      setTimeout(showBanner, 1500);
+    }
+  </script>
 
   <script>
     // Navigation scroll effect
