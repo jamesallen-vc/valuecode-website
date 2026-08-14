@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Values Compass</title>
+<style>
+  :root{
+    --paper:#f6f3ec; --ink:#20262b; --muted:#6b7178; --line:#ddd6c8;
+    --accent:#3d6b66; --accent-soft:#e6ede9; --flag:#9a5a3b; --flag-soft:#f2e6df;
+    --card:#fffdf8; --field:#fffef9; --radius:12px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#1a1d1f; --ink:#e8e6e0; --muted:#9aa0a4; --line:#343a3d;
+      --accent:#6fb3a8; --accent-soft:#25302e; --flag:#d69271; --flag-soft:#33261f;
+      --card:#22262a; --field:#1e2224;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.65;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:720px;margin:0 auto;padding:28px 20px 90px}
+  h1,h2,h3{font-family:Georgia,"Times New Roman",serif;font-weight:600;line-height:1.25;letter-spacing:-.01em}
+  h1{font-size:1.85rem;margin:.15em 0 .1em}
+  h2{font-size:1.35rem;margin:.15em 0 .45em}
+  h3{font-size:1.05rem;margin:.1em 0 .3em}
+  p{margin:.55em 0}
+  .kicker{text-transform:uppercase;letter-spacing:.13em;font-size:.72rem;color:var(--accent);font-weight:700;margin-bottom:6px}
+  .lede{color:var(--muted);font-size:1.02rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:16px 0}
+  label{display:block;font-weight:600;margin:15px 0 6px;font-size:.98rem}
+  .hint{display:block;color:var(--muted);font-size:.85rem;font-weight:400;margin-top:2px}
+  textarea,input[type=text]{width:100%;font:inherit;color:var(--ink);background:var(--field);
+    border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+  textarea{min-height:92px;resize:vertical}
+  textarea:focus,input:focus{outline:2px solid var(--accent-soft);border-color:var(--accent)}
+  .progress{position:sticky;top:0;background:var(--paper);padding:12px 0 10px;z-index:5}
+  .bar{height:5px;background:var(--line);border-radius:99px;overflow:hidden}
+  .bar>i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s ease}
+  .stepno{font-size:.78rem;color:var(--muted);margin-top:7px}
+  .saved{color:var(--accent);opacity:0;transition:opacity .3s}
+  .saved.on{opacity:1}
+  .nav{display:flex;justify-content:space-between;gap:12px;margin-top:22px}
+  button{font:inherit;cursor:pointer;border-radius:10px;padding:11px 20px;border:1px solid var(--accent);
+    background:var(--accent);color:#fff;font-weight:600;transition:filter .15s}
+  button:hover{filter:brightness(1.07)}
+  button.ghost{background:transparent;color:var(--accent)}
+  button.ghost:hover{background:var(--accent-soft)}
+  .seg{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+  .seg label{display:inline-flex;align-items:center;gap:7px;margin:0;font-weight:500;
+    border:1px solid var(--line);border-radius:99px;padding:8px 14px;background:var(--field);cursor:pointer;font-size:.9rem}
+  .seg input{accent-color:var(--accent)}
+  .seg label:has(input:checked){background:var(--accent-soft);border-color:var(--accent);font-weight:600}
+  .addbtn{background:transparent;color:var(--accent);border:1px dashed var(--accent);font-weight:600;padding:10px 16px}
+  .candrow{display:flex;gap:10px;align-items:center;margin:8px 0}
+  .candrow input{flex:1}
+  .del{border:1px solid var(--line);background:var(--field);color:var(--muted);padding:9px 13px;font-size:1rem;flex:0 0 auto;border-radius:10px}
+  .testblock{border-left:3px solid var(--accent);padding:2px 0 2px 16px;margin:18px 0}
+  .q{margin:12px 0}
+  .q>b{font-weight:600;font-size:.93rem;display:block;margin-bottom:2px}
+  .summary{white-space:pre-wrap;font-family:Georgia,serif;font-size:.96rem;background:var(--card);
+    border:1px solid var(--line);border-radius:12px;padding:20px;line-height:1.7}
+  .tools{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+  .privacy{font-size:.82rem;color:var(--muted);background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:14px 0}
+  .err{color:var(--flag);font-size:.85rem;margin-top:8px;display:none}
+  .footer{margin-top:26px;color:var(--muted);font-size:.8rem;border-top:1px solid var(--line);padding-top:14px}
+  .link{background:none;border:none;color:var(--accent);cursor:pointer;font:inherit;padding:0;text-decoration:underline}
+  .reveal{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+  .reveal.on{display:block}
+  .vgrid{display:grid;grid-template-columns:1fr;gap:16px 28px;margin-top:12px}
+  @media (min-width:560px){.vgrid{grid-template-columns:1fr 1fr}}
+  .vgrid h3{font-size:.92rem;margin:0 0 6px;color:var(--accent)}
+  .vgrid ul{margin:0;padding-left:18px}
+  .vgrid li{margin:5px 0;font-size:.9rem;line-height:1.5}
+  .vgrid li b{color:var(--ink)}
+  @media print{
+    .progress,.nav,.tools,.privacy,.footer,button{display:none!important}
+    :root{--paper:#fff;--ink:#000;--muted:#333;--line:#ccc;--accent:#2f4f4a;--card:#fff;--field:#fff}
+    body{background:#fff;color:#000}
+    .wrap{padding:0;max-width:100%}
+    .summary{background:none;border:none;padding:0;font-size:11pt;line-height:1.6}
+    .card{border-color:#ccc;background:#fff}
+    h1,h2,h3,.kicker{color:#000}
+    @page{margin:2cm}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="progress">
+    <div class="bar"><i id="fill"></i></div>
+    <div class="stepno"><span id="stepno"></span> · <span class="saved" id="saved">saved</span></div>
+  </div>
+  <div id="stage"></div>
+  <div class="nav">
+    <button class="ghost" id="back">Back</button>
+    <button id="next">Continue</button>
+  </div>
+  <div class="footer">
+    Values Compass · your responses stay on this device.
+    <div style="margin-top:9px"><button class="link" id="reset">Clear everything and start over</button></div>
+  </div>
+</div>
+<script>
+(function(){
+var KEY='values_compass_v1';
+var data=load()||{routes:{},candidates:['','',''],tests:{},behaviour:{},priority:{value:'',why:''}};
+var step=0;
+function $(id){return document.getElementById(id)}
+function load(){try{return JSON.parse(localStorage.getItem(KEY))}catch(e){return null}}
+var st;function save(){try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}var s=$('saved');s.classList.add('on');clearTimeout(st);st=setTimeout(function(){s.classList.remove('on')},900)}
+function esc(s){return (s||'').replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})}
+function live(){return data.candidates.map(function(s){return s.trim()}).filter(Boolean)}
+var steps=[intro,rPain,rMoment,rAdmire,rLegacy,distil,testStep,liveStep,prioritise,summary];
+
+function ta(id,ph){return '<textarea data-r="'+id+'" placeholder="'+(ph||'')+'"></textarea>'}
+
+function intro(){return '<div class="kicker">Values Compass</div>'+
+'<h1>Finding the direction you want to lead by</h1>'+
+'<p class="lede">A starting point for the work ahead. Thirty to forty minutes, and you don\'t need to finish in one sitting: it saves as you go.</p>'+
+'<div class="card"><h2>First, what we mean by a value</h2>'+
+'<p>A value isn\'t a goal: a goal can be finished and crossed off. It isn\'t an outcome you\'re chasing, like recognition or success. And it isn\'t a feeling, like confidence or calm.</p>'+
+'<p>A value is a chosen quality of how you act: a direction available to you on any given day, whatever the quarter has delivered, however you feel.</p>'+
+'<p>Think of a marathon. The finish line, 42.2 kilometres away, is the goal: it\'s what the training is built around. But it has nothing to say about the 30-kilometre mark, when your legs are cramping, your pace has dropped, and the thought arriving is I can\'t do this. A value is what governs how you run that stretch. It doesn\'t remove the pain or win the argument with the doubt. It\'s the direction you keep choosing, stride by stride, while the pain and the doubt are still there. That\'s what this exercise is after: not the finish line, but the bearing you hold when the running gets hard.</p></div>'+
+'<div class="privacy">Everything you type stays in this browser, on this device. Nothing is sent anywhere. At the end, you\'ll export a summary to bring to your next session.</div>'+
+'<p>Don\'t try to give the right answers. The useful ones are usually the honest, slightly uncomfortable ones.</p>'}
+
+function rPain(){return '<div class="kicker">Route 1 of 4 · what gets under your skin</div>'+
+'<h2>Where do you notice tension?</h2>'+
+'<p class="lede">What frustrates or angers you at work almost always marks a value being violated. You don\'t get to choose what irritates you, which makes it more honest than most values statements.</p>'+
+'<div class="card"><label>Bring to mind a recent situation at work that left you frustrated, angry, or deflated.<span class="hint">Describe what happened. Briefly is fine.</span></label>'+ta('pain1')+
+'<label>Now look underneath the reaction. What was being violated or ignored?<span class="hint">Not the outcome: the standard or way of operating that mattered to you and wasn\'t honoured.</span></label>'+ta('pain2')+'</div>'}
+
+function rMoment(){return '<div class="kicker">Route 2 of 4 · when it felt right</div>'+
+'<h2>A moment you felt most like the leader you want to be</h2>'+
+'<p class="lede">Recent or years ago: a moment at work that felt right, when you were most yourself as a leader.</p>'+
+'<div class="card"><label>Describe the moment.<span class="hint">Set the scene. What was happening?</span></label>'+ta('mom1')+
+'<label>Slow it down. What were you doing, and what were you honouring?<span class="hint">The quality of your own action, not whether it worked out.</span></label>'+ta('mom2')+'</div>'}
+
+function rAdmire(){return '<div class="kicker">Route 3 of 4 · admiration and its opposite</div>'+
+'<h2>Who you admire, and a moment you weren\'t proud of</h2>'+
+'<div class="card"><label>Think of a leader you admire. What specifically about how they operate do you respect?<span class="hint">How they behave and treat people, not what they\'ve achieved or how senior they are.</span></label>'+ta('adm1')+
+'<label>Now recall a moment you acted in a way you weren\'t proud of. What did you wish you\'d done instead?<span class="hint">The gap between how you behaved and how you wanted to behave points straight at a value.</span></label>'+ta('adm2')+'</div>'}
+
+function rLegacy(){return '<div class="kicker">Route 4 of 4 · legacy</div>'+
+'<h2>How you want to be remembered as a leader</h2>'+
+'<p class="lede">Picture the people you\'ve led, years from now, once you\'re no longer their leader.</p>'+
+'<div class="card"><label>What do you want them to say about how you led them?<span class="hint">With nothing to gain from flattering you, and no reason to hold back.</span></label>'+ta('leg1')+'</div>'}
+
+var EXAMPLE_VALUES={
+'Deciding and leading':[
+  {word:'Courageous',desc:'being brave and bold, and persisting in the face of fear, risk, or uncertainty'},
+  {word:'Decisive',desc:'choosing and committing to a course of action rather than deferring it'},
+  {word:'Visionary',desc:'imagining and working toward a future that doesn\'t yet exist'},
+  {word:'Accountable',desc:'owning your actions and their outcomes, without deflecting or minimising'}
+],
+'Care and connection':[
+  {word:'Compassionate',desc:'responding with warmth and understanding to yourself or others in difficulty'},
+  {word:'Kind',desc:'being considerate, generous, and caring toward yourself or others'},
+  {word:'Loyal',desc:'staying faithful and committed to the people and causes you\'ve chosen'},
+  {word:'Encouraging',desc:'supporting, inspiring, and bringing out the best in others'}
+],
+'Creativity and play':[
+  {word:'Creative',desc:'being imaginative and inventive, open to new ways of doing things'},
+  {word:'Playful',desc:'bringing humour, lightness, and fun into what you do'},
+  {word:'Curious',desc:'staying open-minded and interested, willing to explore and discover'},
+  {word:'Adventurous',desc:'seeking out novel, challenging, or exciting experiences'}
+],
+'Order and mastery':[
+  {word:'Orderly',desc:'being organised, considered, and disciplined in how you work'},
+  {word:'Skilful',desc:'doing things well, drawing on your knowledge, craft, and experience'},
+  {word:'Focused',desc:'staying engaged and present in whatever you\'re doing'},
+  {word:'Industrious',desc:'being diligent, hardworking, and dedicated to the task at hand'}
+],
+'Integrity and character':[
+  {word:'Honest',desc:'being truthful and sincere, with yourself and with others'},
+  {word:'Fair',desc:'acting with justice and even-handedness, toward yourself and others'},
+  {word:'Responsible',desc:'being reliable and trustworthy, and accountable for your actions'},
+  {word:'Respectful',desc:'treating yourself and others with care and consideration'}
+],
+'Growth, presence and acceptance':[
+  {word:'Reflective',desc:'staying interested in what you don\'t yet see about yourself'},
+  {word:'Mindful',desc:'being fully present and engaged in whatever you\'re doing'},
+  {word:'Grateful',desc:'appreciating what you have, rather than only what\'s missing'},
+  {word:'Forgiving',desc:'letting go of resentments and grudges, toward yourself or others'}
+],
+'Independence and authenticity':[
+  {word:'Authentic',desc:'being genuine and true to yourself, rather than performing a role'},
+  {word:'Assertive',desc:'calmly and fairly standing up for what you believe and what you want'},
+  {word:'Independent',desc:'choosing for yourself how you think and act'},
+  {word:'Expressive',desc:'saying what you think and feel, rather than holding it back'}
+]
+};
+var CAND_PLACEHOLDERS=[
+  'e.g. deciding boldly, even under pressure',
+  'e.g. responding to setbacks without blame',
+  'e.g. bringing more play into how you solve problems',
+  'e.g. protecting time for the work that matters',
+  'e.g. telling the truth kindly',
+  'e.g. staying curious about your own blind spots'
+];
+function distil(){
+var rows=data.candidates.map(function(v,i){return '<div class="candrow"><input type="text" value="'+esc(v)+'" data-cand="'+i+'" placeholder="'+esc(CAND_PLACEHOLDERS[i%CAND_PLACEHOLDERS.length])+'"><button class="del" data-del="'+i+'" title="Remove">×</button></div>'}).join('');
+var groups=Object.keys(EXAMPLE_VALUES).map(function(g){
+var items=EXAMPLE_VALUES[g].map(function(v){return '<li><b>'+esc(v.word)+':</b> '+esc(v.desc)+'</li>'}).join('');
+return '<div><h3>'+esc(g)+'</h3><ul>'+items+'</ul></div>'}).join('');
+return '<div class="kicker">Distil</div><h2>Name the qualities that keep recurring</h2>'+
+'<p class="lede">Read back over your four answers. What qualities of action show up more than once? Name three to six.</p>'+
+'<div class="card"><span class="hint" style="margin-top:0">A value works best as a direction, not a label. If a word like "courageous" or "compassionate" resonates from the list below, turn it into what that looks like in action: not "courage" but "deciding boldly, even under pressure"; not "compassion" but "responding to setbacks without blame".</span>'+
+rows+'<div style="margin-top:8px"><button class="addbtn" id="add">+ Add another</button></div>'+
+'<div class="err" id="err">Name at least one value before continuing.</div>'+
+'<div style="margin-top:16px"><button class="link" id="verbToggle" type="button">Stuck for words? See a list of example values</button>'+
+'<div class="reveal" id="verbList"><p class="hint" style="margin-top:0">Use this only if you\'re stuck. It\'s a stimulus list, not a shortcut. Find the word that resonates, then write your candidate value above as the direction it points you in, not as the label itself. The test step coming up will still ask whether it\'s yours or borrowed, and a value pulled straight from a list is easier to pick than to live.</p>'+
+'<div class="vgrid">'+groups+'</div></div></div>'+
+'</div>'}
+
+function testStep(){
+var c=live();if(!c.length)return '<h2>Name a few candidates first</h2><p class="lede">Go back a step and list the qualities that recurred.</p>';
+var blocks=c.map(function(name){
+var t=data.tests[name]||{};
+function seg(key,opts){return opts.map(function(o){return '<label><input type="radio" name="'+key+'__'+esc(name)+'" value="'+o.v+'" '+(t[key]===o.v?'checked':'')+' data-test="'+esc(name)+'" data-key="'+key+'">'+o.l+'</label>'}).join('')}
+return '<div class="testblock"><h3>'+esc(name)+'</h3>'+
+'<div class="q"><b>Is it chosen, or complied with?</b><span class="hint">A move toward who you want to be, or a move away from being judged, or from feeling like a fraud?</span><div class="seg">'+seg('chosen',[{v:'toward',l:'Toward (chosen)'},{v:'away',l:'Away (have to)'}])+'</div></div>'+
+'<div class="q"><b>Is it a value, or a goal?</b><span class="hint">Can it ever be finished and ticked off? If yes, find the value underneath it.</span><div class="seg">'+seg('type',[{v:'value',l:'A direction'},{v:'goal',l:'A goal in disguise'}])+'</div></div>'+
+'<div class="q"><b>Is it yours, or inherited?</b><span class="hint">Yours, or one absorbed from a parent, a colleague, or your organisation, and taken on as your own?</span><div class="seg">'+seg('origin',[{v:'mine',l:'Mine'},{v:'inherited',l:'Inherited'}])+'</div></div>'+
+'<div class="q"><b>Would you hold it even if no one saw?</b><div class="seg">'+seg('unseen',[{v:'yes',l:'Yes'},{v:'no',l:'Not sure'}])+'</div></div>'+
+'<label>Anything you noticed while testing it?<span class="hint">Optional.</span></label><textarea data-note="'+esc(name)+'">'+esc(t.note||'')+'</textarea></div>'}).join('');
+return '<div class="kicker">Test each one</div><h2>Which of these are really yours?</h2>'+
+'<p class="lede">People carry a lot of borrowed values: things held to earn approval or hold off a fear of not being enough. These four checks separate the chosen from the inherited. There are no wrong answers, only useful ones.</p>'+blocks}
+
+function liveStep(){
+var c=live();if(!c.length)return '<h2>Nothing to work with yet</h2><p class="lede">Add some candidate values a couple of steps back.</p>';
+var blocks=c.map(function(name){
+var b=data.behaviour[name]||{};
+return '<div class="testblock"><h3>'+esc(name)+'</h3>'+
+'<label>If you were living this value fully, what would you be doing differently on an ordinary Tuesday, in the meeting you\'re dreading?<span class="hint">This is the aspiration, not your current behaviour. Make it concrete and observable: something anyone in the room could point to. If you can\'t picture yourself doing it in that meeting, it\'s not specific enough yet.</span></label><textarea data-beh="'+esc(name)+'" data-bk="tuesday">'+esc(b.tuesday||'')+'</textarea>'+
+'<label>Where are you not living it right now?<span class="hint">Optional. This is where the real work usually is.</span></label><textarea data-beh="'+esc(name)+'" data-bk="gap">'+esc(b.gap||'')+'</textarea></div>'}).join('');
+return '<div class="kicker">Make it live</div><h2>Turn it into behaviour</h2>'+
+'<p class="lede">For each value that survived the tests, do two things: describe what fully living it would look like in your week, then name where you\'re currently falling short. The gap between the two is the coaching agenda.</p>'+blocks}
+
+function prioritise(){
+var c=live();
+var opts=c.map(function(v){return '<label><input type="radio" name="prio" value="'+esc(v)+'" '+(data.priority.value===v?'checked':'')+'>'+esc(v)+'</label>'}).join('');
+return '<div class="kicker">Prioritise</div><h2>Which one, if you lived it more fully, would change your leadership the most?</h2>'+
+'<p class="lede">You don\'t work on all of them at once. Pick the single value that, lived more fully right now, would change your leadership the most.</p>'+
+'<div class="card"><div class="seg" style="flex-direction:column;align-items:stretch">'+(opts||'<span class="hint">Add candidates earlier to choose here.</span>')+'</div>'+
+'<label>Why this one?</label><textarea id="why">'+esc(data.priority.why||'')+'</textarea></div>'}
+
+function build(){
+var d=new Date(),ds=d.toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'});
+var r=data.routes,o='Values Compass: reflection summary\n'+ds+'\n\n';
+o+='What got under my skin\n'+(r.pain1||'(not answered)')+'\nWhat was being violated: '+(r.pain2||'(not answered)')+'\n\n';
+o+='A moment it felt right\n'+(r.mom1||'(not answered)')+'\nWhat I was honouring: '+(r.mom2||'(not answered)')+'\n\n';
+o+='Admiration and its opposite\nAdmire: '+(r.adm1||'(not answered)')+'\nNot proud of: '+(r.adm2||'(not answered)')+'\n\n';
+o+='Legacy\n'+(r.leg1||'(not answered)')+'\n\nCandidate values';
+var c=live();if(!c.length)o+='\nNo candidate values named.';
+c.forEach(function(name){var t=data.tests[name]||{},b=data.behaviour[name]||{};var f=[];
+if(t.chosen==='away')f.push('away-move');if(t.type==='goal')f.push('a goal, not a direction');
+if(t.origin==='inherited')f.push('inherited');if(t.unseen==='no')f.push('may be about approval');
+o+='\n\n• '+name+(f.length?'   [discuss: '+f.join('; ')+']':'');
+if(b.tuesday)o+='\n   On a Tuesday: '+b.tuesday;if(b.gap)o+='\n   Where I\'m not living it: '+b.gap;if(t.note)o+='\n   Note: '+t.note});
+o+='\n\nThe one to start with\n'+(data.priority.value||'(not answered)');if(data.priority.why)o+='\nWhy: '+data.priority.why;
+return o+'\n'}
+
+function summary(){return '<div class="kicker">Your summary</div><h2>Bring this to your next session</h2>'+
+'<p class="lede">Anything flagged is worth talking through with your coach: it may be a goal, an away-move, or a value you\'ve inherited rather than chosen.</p>'+
+'<div class="tools"><button id="copy">Copy to clipboard</button>'+
+'<button class="ghost" id="dl">Download as file</button>'+
+'<button class="ghost" id="print">Print / save as PDF</button></div>'+
+'<div class="summary" id="sum">'+esc(build())+'</div>'}
+
+function render(){
+$('stage').innerHTML=steps[step]();
+$('fill').style.width=(step/(steps.length-1)*100)+'%';
+$('stepno').textContent='Step '+(step+1)+' of '+steps.length;
+$('back').style.visibility=step===0?'hidden':'visible';
+$('next').style.visibility=step===steps.length-1?'hidden':'visible';
+document.querySelectorAll('[data-r]').forEach(function(el){el.value=data.routes[el.dataset.r]||'';
+el.addEventListener('input',function(){data.routes[el.dataset.r]=el.value;save()})});
+window.scrollTo({top:0,behavior:'smooth'});
+}
+
+$('next').addEventListener('click',function(){
+if(steps[step]===distil&&!live().length){var e=$('err');if(e)e.style.display='block';return}
+if(step<steps.length-1){step++;render()}});
+$('back').addEventListener('click',function(){if(step>0){step--;render()}});
+$('reset').addEventListener('click',function(){if(confirm('Clear all your responses and start over?')){try{localStorage.removeItem(KEY)}catch(e){}data={routes:{},candidates:['','',''],tests:{},behaviour:{},priority:{value:'',why:''}};step=0;render()}});
+
+$('stage').addEventListener('input',function(e){var t=e.target;
+if(t.dataset.cand!==undefined){data.candidates[+t.dataset.cand]=t.value;var er=$('err');if(er)er.style.display='none';save()}
+if(t.dataset.note!==undefined){(data.tests[t.dataset.note]=data.tests[t.dataset.note]||{}).note=t.value;save()}
+if(t.dataset.beh!==undefined){(data.behaviour[t.dataset.beh]=data.behaviour[t.dataset.beh]||{})[t.dataset.bk]=t.value;save()}
+if(t.id==='why'){data.priority.why=t.value;save()}});
+$('stage').addEventListener('change',function(e){var t=e.target;
+if(t.dataset.test){(data.tests[t.dataset.test]=data.tests[t.dataset.test]||{})[t.dataset.key]=t.value;save()}
+if(t.name==='prio'){data.priority.value=t.value;save()}});
+$('stage').addEventListener('click',function(e){var t=e.target;
+if(t.id==='add'){data.candidates.push('');save();render();return}
+if(t.id==='verbToggle'){var vl=$('verbList');if(vl){vl.classList.toggle('on');t.textContent=vl.classList.contains('on')?'Hide the list':'Stuck for words? See a list of example values'}return}
+if(t.dataset.del!==undefined){data.candidates.splice(+t.dataset.del,1);if(!data.candidates.length)data.candidates=[''];save();render();return}
+if(t.id==='copy'){var txt=build();if(navigator.clipboard){navigator.clipboard.writeText(txt).then(function(){t.textContent='Copied ✓'})}else{var x=document.createElement('textarea');x.value=txt;document.body.appendChild(x);x.select();try{document.execCommand('copy')}catch(y){}x.remove();t.textContent='Copied ✓'}return}
+if(t.id==='dl'){var b=new Blob([build()],{type:'text/plain'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='values-compass.txt';a.click();return}
+if(t.id==='print'){window.print();return}});
+
+render();
+})();
+</script>
+</body>
+</html>
