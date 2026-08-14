@@ -76,15 +76,19 @@
   .vgrid ul{margin:0;padding-left:18px}
   .vgrid li{margin:5px 0;font-size:.9rem;line-height:1.5}
   .vgrid li b{color:var(--ink)}
+  .confidential{display:none}
   @media print{
     .progress,.nav,.tools,.privacy,.footer,button{display:none!important}
     :root{--paper:#fff;--ink:#000;--muted:#333;--line:#ccc;--accent:#2f4f4a;--card:#fff;--field:#fff}
     body{background:#fff;color:#000}
-    .wrap{padding:0;max-width:100%}
+    .wrap{padding:2cm;max-width:100%}
     .summary{background:none;border:none;padding:0;font-size:11pt;line-height:1.6}
     .card{border-color:#ccc;background:#fff}
     h1,h2,h3,.kicker{color:#000}
-    @page{margin:2cm}
+    .confidential{display:block;text-align:right;font-size:.72rem;font-weight:700;
+      text-transform:uppercase;letter-spacing:.12em;color:#666;margin-bottom:16px;
+      padding-bottom:8px;border-bottom:1px solid #ccc}
+    @page{margin:1.5cm}
   }
 </style>
 </head>
@@ -100,7 +104,7 @@
     <button id="next">Continue</button>
   </div>
   <div class="footer">
-    Values Compass · your responses stay on this device.
+    Values Compass · your responses never leave your browser.
     <div style="margin-top:9px"><button class="link" id="reset">Clear everything and start over</button></div>
   </div>
 </div>
@@ -120,12 +124,12 @@ function ta(id,ph){return '<textarea data-r="'+id+'" placeholder="'+(ph||'')+'">
 
 function intro(){return '<div class="kicker">Values Compass</div>'+
 '<h1>Finding the direction you want to lead by</h1>'+
-'<p class="lede">A starting point for the work ahead. Thirty to forty minutes, and you don\'t need to finish in one sitting: it saves as you go.</p>'+
+'<p class="lede">A starting point for the work ahead. Twenty-five to thirty-five minutes, best done in one sitting: it saves as you go, but only on this device and browser, so switching partway means starting again.</p>'+
 '<div class="card"><h2>First, what we mean by a value</h2>'+
 '<p>A value isn\'t a goal: a goal can be finished and crossed off. It isn\'t an outcome you\'re chasing, like recognition or success. And it isn\'t a feeling, like confidence or calm.</p>'+
 '<p>A value is a chosen quality of how you act: a direction available to you on any given day, whatever the quarter has delivered, however you feel.</p>'+
 '<p>Think of a marathon. The finish line, 42.2 kilometres away, is the goal: it\'s what the training is built around. But it has nothing to say about the 30-kilometre mark, when your legs are cramping, your pace has dropped, and the thought arriving is I can\'t do this. A value is what governs how you run that stretch. It doesn\'t remove the pain or win the argument with the doubt. It\'s the direction you keep choosing, stride by stride, while the pain and the doubt are still there. That\'s what this exercise is after: not the finish line, but the bearing you hold when the running gets hard.</p></div>'+
-'<div class="privacy">Everything you type stays in this browser, on this device. Nothing is sent anywhere. At the end, you\'ll export a summary to bring to your next session.</div>'+
+'<div class="privacy">Everything you type stays in your browser. Nothing is sent anywhere or saved on a server. At the end, you\'ll export a summary to bring to your next session.</div>'+
 '<p>Don\'t try to give the right answers. The useful ones are usually the honest, slightly uncomfortable ones.</p>'}
 
 function rPain(){return '<div class="kicker">Route 1 of 4 · what gets under your skin</div>'+
@@ -265,11 +269,10 @@ if(b.tuesday)o+='\n   On a Tuesday: '+b.tuesday;if(b.gap)o+='\n   Where I\'m not
 o+='\n\nThe one to start with\n'+(data.priority.value||'(not answered)');if(data.priority.why)o+='\nWhy: '+data.priority.why;
 return o+'\n'}
 
-function summary(){return '<div class="kicker">Your summary</div><h2>Bring this to your next session</h2>'+
+function summary(){return '<div class="confidential">Confidential</div>'+
+'<div class="kicker">Your summary</div><h2>Bring this to your next session</h2>'+
 '<p class="lede">Anything flagged is worth talking through with your coach: it may be a goal, an away-move, or a value you\'ve inherited rather than chosen.</p>'+
-'<div class="tools"><button id="copy">Copy to clipboard</button>'+
-'<button class="ghost" id="dl">Download as file</button>'+
-'<button class="ghost" id="print">Print / save as PDF</button></div>'+
+'<div class="tools"><button id="print">Print / save as PDF</button></div>'+
 '<div class="summary" id="sum">'+esc(build())+'</div>'}
 
 function render(){
@@ -301,8 +304,6 @@ $('stage').addEventListener('click',function(e){var t=e.target;
 if(t.id==='add'){data.candidates.push('');save();render();return}
 if(t.id==='verbToggle'){var vl=$('verbList');if(vl){vl.classList.toggle('on');t.textContent=vl.classList.contains('on')?'Hide the list':'Stuck for words? See a list of example values'}return}
 if(t.dataset.del!==undefined){data.candidates.splice(+t.dataset.del,1);if(!data.candidates.length)data.candidates=[''];save();render();return}
-if(t.id==='copy'){var txt=build();if(navigator.clipboard){navigator.clipboard.writeText(txt).then(function(){t.textContent='Copied ✓'})}else{var x=document.createElement('textarea');x.value=txt;document.body.appendChild(x);x.select();try{document.execCommand('copy')}catch(y){}x.remove();t.textContent='Copied ✓'}return}
-if(t.id==='dl'){var b=new Blob([build()],{type:'text/plain'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='values-compass.txt';a.click();return}
 if(t.id==='print'){window.print();return}});
 
 render();
